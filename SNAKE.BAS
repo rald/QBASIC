@@ -1,5 +1,8 @@
 DECLARE SUB food ()
 
+
+delay = 2000
+
 sz = 10
 x = 0
 y = 0
@@ -12,12 +15,13 @@ n = cols * rows
 
 sn = 4
 
-DIM sx(n), sy(n)
+DIM sx(1 TO n), sy(1 TO n)
 
 fx = 0
 fy = 0
 
 blink = 0
+blinkMax = 2000
 
 
 
@@ -37,20 +41,26 @@ DO
         sx(1) = x
         sy(1) = y
 
-        IF blink = 1 THEN
-                blink = 0
-                LINE (fx * sz, fy * sz)-(fx * sz + sz - 1, fy * sz + sz - 1), 14, BF
-        ELSE
-                blink = 1
-                LINE (fx * sz, fy * sz)-(fx * sz + sz - 1, fy * sz + sz - 1), 1, BF
-        END IF
         LINE (x * sz, y * sz)-(x * sz + sz - 1, y * sz + sz - 1), 14, BF
-                                                       
-        SLEEP 1
+      
+        FOR d = 0 TO delay
+       
+                blink = blink + 1
+                IF blink < blinkMax / 2 THEN
+                        LINE (fx * sz, fy * sz)-(fx * sz + sz - 1, fy * sz + sz - 1), 14, BF
+                ELSEIF blink < blinkMax THEN
+                        LINE (fx * sz, fy * sz)-(fx * sz + sz - 1, fy * sz + sz - 1), 1, BF
+                ELSE
+                        blink = 0
+                END IF
+               
+               
+                k$ = INKEY$
+                IF k$ <> "" THEN EXIT FOR
+        NEXT
+
 
         LINE (sx(sn) * sz, sy(sn) * sz)-(sx(sn) * sz + sz - 1, sy(sn) * sz + sz - 1), 1, BF
-
-        k$ = INKEY$
        
         IF k$ <> "" THEN
 
@@ -111,14 +121,16 @@ SUB food
         fy = INT(RND * rows)
 
         DO
-                again = false
+               
+                again = 0
+
                 FOR i = 1 TO sn
                         IF sx(i) = fx AND sy(i) = fy THEN
-                                again = true
+                                again = 1
                         END IF
                 NEXT
 
-                IF again THEN
+                IF again = 1 THEN
                         fx = fx + 1
                         IF fx >= cols THEN
                                 fx = 0
@@ -127,7 +139,7 @@ SUB food
                         END IF
                 END IF
 
-        LOOP WHILE again
+        LOOP WHILE again = 1
 
 END SUB
 
